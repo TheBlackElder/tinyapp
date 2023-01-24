@@ -33,6 +33,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -46,28 +47,40 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+
+app.post("/urls/:id", (req, res) => {
+  console.log("edit");
+  const id = req.params.id;
+  const longURL = req.body.longURL;
+  urlDatabase[id] = longURL;
+  res.redirect("/urls");
+});
+
 app.post("/urls", (req, res) => {
+  console.log('newURL');
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
   console.log(req.body.longURL);
-  res.redirect("./urls/:shortURL");
+  res.redirect("./urls");
 });
 
+
+
+app.get("/urls/:id", (req, res) => {
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
+  res.render("urls_show", templateVars);
+});
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
-});
-
-app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[urlDatabase] };
-  res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
+
 
 
 app.listen(PORT, () => {
