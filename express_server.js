@@ -90,6 +90,9 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/register", (req, res) => {
+  res.render("register");
+});
 
 app.post("/login", (req, res) => {
   res.cookie("username",req.body.username);
