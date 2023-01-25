@@ -37,14 +37,14 @@
               <td><%= urls[id] %></td>
               <td>
                 <form method="GET" action="/urls/<%= id %>">
-                  <button type="submit">
+                  <button class="btn btn-primary" type="submit">
                     Edit
                   </button>
                 </form>
               </td>
               <td>
                 <form method="POST" action="/urls/<%= id %>/delete">
-                  <button type="submit">
+                  <button class="btn btn-primary" type="submit">
                     Delete
                   </button>
                 </form>

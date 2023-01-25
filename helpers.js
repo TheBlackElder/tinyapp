@@ -1,11 +1,26 @@
-const users = require("./express_server");
 
-const findUserByEmail = (email) => {
+
+const findUserByEmail = (email, users) => {
   for (const id in users) {
-    if (users[id].email === email) return users[id].email;
+    if (users[id].email === email) return users[id];
   }
   return null;
 };
+
+const findMatchingPassword = (email,password, users) => {
+  for (const id in users) {
+    if (users[id].email === email && users[id].password === password) return true;
+  }
+  return false;
+};
+
+
+
+
+
+
+
+module.exports = { findUserByEmail, findMatchingPassword};
 
 // const findUserByEmail = (email) => {
 //   for (const key in users) {
@@ -13,8 +28,6 @@ const findUserByEmail = (email) => {
 //   }
 //   return false;
 // };
-
-module.exports = { findUserByEmail };
 
 // const (let id in user) {
 //   if (req.body.email === users[id].email) {

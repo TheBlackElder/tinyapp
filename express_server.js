@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const cookieParser = require('cookie-parser');
-const {findUserByEmail} = require("./helpers");
+const {findUserByEmail, findMatchingPassword } = require("./helpers");
 
 
 app.use(cookieParser());
@@ -122,7 +122,12 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("register");
+  const userID = req.cookies.user_id;
+  const user = users[userID];
+  const templateVars = {
+    user: user,
+  };
+  res.render("register", templateVars);
 });
 
 app.post("/register", (req, res) => {
@@ -143,17 +148,31 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("login");
+  const userID = req.cookies.user_id;
+  const user = users[userID];
+  const templateVars = {
+    user: user,
+  };
+  res.render("login", templateVars);
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("user_id",req.body.username);
-  res.redirect("/urls");
+  const userEmail = req.body.email;
+  const userPassword = req.body.password;
+  if (!findUserByEmail(userEmail, users)) {
+    return res.status(403).send('This email is not registered');
+  }
+  if (findUserByEmail(userEmail, users) && !findMatchingPassword(userEmail, userPassword, users))
+    return res.status(403).send('Password does not match user account with this email');
+  const user = findUserByEmail(userEmail, users);
+  if (findUserByEmail(userEmail, users) && (findMatchingPassword(userEmail,userPassword, users)))
+    res.cookie("user_id", user.id);
+  return res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 app.listen(PORT, () => {
