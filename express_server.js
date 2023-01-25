@@ -46,14 +46,15 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
 });
 
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
 });
 
 
@@ -139,6 +140,10 @@ app.post("/register", (req, res) => {
   }
   res.cookie("user_id", newUserID);
   res.redirect("/urls");
+});
+
+app.get("/login", (req, res) => {
+  res.render("login");
 });
 
 app.post("/login", (req, res) => {
