@@ -62,7 +62,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.get("/urls", (req, res) => {
   const userID = req.cookies.user_id;
   const user = users[userID];
- 
   const templateVars = {
     urls: urlDatabase,
     user: user,
@@ -80,11 +79,14 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log('newURL');
+  const userID = req.cookies.user_id;
+  if (userID === undefined) {
+    return res.status(401).send('Login required to access');
+  }
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
-  console.log(req.body.longURL);
+ 
   res.redirect("./urls");
 });
 
@@ -95,7 +97,9 @@ app.post("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userID = req.cookies.user_id;
   const user = users[userID];
- console.log("label", user);
+  if (userID === undefined) {
+    return res.redirect("/login");
+  }
   const templateVars = {
     urls: urlDatabase,
     user: user,
@@ -118,12 +122,21 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  if (longURL === undefined) {
+    return res.status(404).send('Short URL  not found');
+  }
+  return res.redirect(longURL);
 });
+
+
+
 
 app.get("/register", (req, res) => {
   const userID = req.cookies.user_id;
   const user = users[userID];
+  if (userID !== undefined) {
+    return res.redirect("/urls");
+  }
   const templateVars = {
     user: user,
   };
@@ -150,6 +163,9 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
   const userID = req.cookies.user_id;
   const user = users[userID];
+  if (userID !== undefined) {
+    return res.redirect("/urls");
+  }
   const templateVars = {
     user: user,
   };
@@ -178,3 +194,7 @@ app.post("/logout", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+// if (res.cookie("user_id", userID)) {
+//   return res.redirect("/urls");
+// }
