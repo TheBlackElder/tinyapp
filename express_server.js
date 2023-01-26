@@ -33,6 +33,10 @@ const urlDatabase = {
     longURL: "https://www.google.ca",
     userID: "aJ48lW",
   },
+  z3roGr: {
+    longURL: "https://www.google.ca",
+    userID: "i9o6ty",
+  },
 };
 
 const users = {
@@ -64,8 +68,15 @@ app.get("/urls.json", (req, res) => {
 
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  const userID = req.cookies.user_id;
+  const authURLs = urlsForUser(userID, urlDatabase);
+  if (authURLs) {
+    delete urlDatabase[req.params.shortURL];
+    return res.redirect("/urls");
+  } else {
+    res.status(401).send(" Not authorized");
+    res.redirect("/login");
+  }
 });
 
 
@@ -74,7 +85,7 @@ app.get("/urls", (req, res) => {
   const userID = req.cookies.user_id;
   const user = users[userID];
   const authURLs = urlsForUser(userID, urlDatabase);
-  if (userID) {
+  if (user) {
     const templateVars = {
       urls: authURLs,
       user: user,
@@ -86,14 +97,27 @@ app.get("/urls", (req, res) => {
   }
 });
 
-
 app.post("/urls/:id", (req, res) => {
-  console.log("edit");
   const id = req.params.id;
   const longURL = req.body.longURL;
-  urlDatabase[id].longURL = longURL;
-  res.redirect("/urls");
+  const userID = req.cookies.user_id;
+  const user = users[userID];
+  const authURLs = urlsForUser(userID, urlDatabase);
+  if (!user) {
+    return res.status(401).send("Login required");
+  }
+  if (!urlDatabase[id]) {
+    return res.status(401).send(" ID not valid");
+  }
+  if (authURLs[id]) {
+    urlDatabase[id].longURL = longURL;
+    return res.redirect("/urls");
+  } else {
+    res.status(401).send(" Not authorized");
+    res.redirect("/login");
+  }
 });
+
 
 
 app.post("/urls", (req, res) => {
@@ -186,7 +210,7 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
   const userID = req.cookies.user_id;
   const user = users[userID];
-  if (userID !== undefined) {
+  if (user) {
     return res.redirect("/urls");
   }
   const templateVars = {
