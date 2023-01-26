@@ -23,10 +23,15 @@ const generateRandomString = () => {
 };
 
 
-
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -74,10 +79,11 @@ app.post("/urls/:id", (req, res) => {
   console.log("edit");
   const id = req.params.id;
   const longURL = req.body.longURL;
-  urlDatabase[id] = longURL;
+  urlDatabase[id].longURL = longURL;
   res.redirect("/urls");
 });
 
+//changed to equal a new object
 app.post("/urls", (req, res) => {
   const userID = req.cookies.user_id;
   if (userID === undefined) {
@@ -85,7 +91,8 @@ app.post("/urls", (req, res) => {
   }
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {longURL: longURL, userID: userID };
+  console.log(urlDatabase);
  
   res.redirect("./urls");
 });
@@ -113,7 +120,7 @@ app.get("/urls/:id", (req, res) => {
  
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     urls: urlDatabase,
     user: user,
   };
@@ -121,7 +128,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   if (longURL === undefined) {
     return res.status(404).send('Short URL  not found');
   }
@@ -195,6 +202,3 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// if (res.cookie("user_id", userID)) {
-//   return res.redirect("/urls");
-// }
