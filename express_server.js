@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080; 
 const cookieParser = require('cookie-parser');
-const {findUserByEmail, findMatchingPassword } = require("./helpers");
+const {findUserByEmail, findMatchingPassword, urlsForUser } = require("./helpers");
+
 
 
 app.use(cookieParser());
@@ -45,6 +46,11 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk",
   },
+  aJ48lW: {
+    id: "aJ48lW",
+    email: "test@user.com",
+    password: "easy",
+  },
 };
 
 app.get("/", (req, res) => {
@@ -67,11 +73,17 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.get("/urls", (req, res) => {
   const userID = req.cookies.user_id;
   const user = users[userID];
-  const templateVars = {
-    urls: urlDatabase,
-    user: user,
-  };
-  res.render("urls_index", templateVars);
+  const authURLs = urlsForUser(userID, urlDatabase);
+  if (userID) {
+    const templateVars = {
+      urls: authURLs,
+      user: user,
+    };
+    res.render("urls_index", templateVars);
+  } else {
+    res.status(401);
+    res.redirect("/login");
+  }
 });
 
 
@@ -83,7 +95,7 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-//changed to equal a new object
+
 app.post("/urls", (req, res) => {
   const userID = req.cookies.user_id;
   if (userID === undefined) {
@@ -117,14 +129,18 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userID = req.cookies.user_id;
   const user = users[userID];
- 
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    urls: urlDatabase,
-    user: user,
-  };
-  res.render("urls_show", templateVars);
+  if (urlsForUser(userID, urlDatabase)) {
+    const templateVars = {
+      id: req.params.id,
+      longURL: urlDatabase[req.params.id].longURL,
+      urls: urlDatabase,
+      user: user,
+    };
+    return res.render("urls_show", templateVars);
+  } else {
+    res.status(400).send(" Access denied, URL not linked to this account ")
+    return res.redirect("/login");
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
