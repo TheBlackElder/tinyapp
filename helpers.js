@@ -1,3 +1,13 @@
+const generateRandomString = () => {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+  for (let i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
 
 
 const findUserByEmail = (email, users) => {
@@ -30,38 +40,5 @@ const urlsForUser = (userID, urlDatabase) => {
 
 
 
-module.exports = { findUserByEmail, findMatchingPassword, urlsForUser};
-
-// Instruction
-// Create a function named urlsForUser(id) which returns the URLs where the userID is equal to the id of the currently logged-in user.
-
-// aJ48lW
-// test@user.com
-// easy
-
-
-// const urlDatabase = {
-//   b6UTxQ: {
-//     longURL: "https://www.tsn.ca",
-//     userID: "aJ48lW",
-//   },
-//   i3BoGr: {
-//     longURL: "https://www.google.ca",
-//     userID: "aJ48lW",
-//   },
-// };
-
-// const users = {
-//   userRandomID: {
-//     id: "userRandomID",
-//     email: "user@example.com",
-//     password: "purple-monkey-dinosaur",
-//   },
-//   user2RandomID: {
-//     id: "user2RandomID",
-//     email: "user2@example.com",
-//     password: "dishwasher-funk",
-//   },
-// };
-
+module.exports = { generateRandomString, findUserByEmail, findMatchingPassword, urlsForUser};
 

@@ -2,23 +2,15 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 const cookieParser = require('cookie-parser');
-const {findUserByEmail, findMatchingPassword, urlsForUser } = require("./helpers");
+const {findUserByEmail, findMatchingPassword, urlsForUser, generateRandomString } = require("./helpers");
+const bcrypt = require("bcryptjs");
+
 
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
-const generateRandomString = () => {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  const charactersLength = characters.length;
-  for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-};
 
 
 const urlDatabase = {
@@ -41,16 +33,19 @@ const users = {
     id: "userRandomID",
     email: "user@example.com",
     password: "purple-monkey-dinosaur",
+    hashedPassword: bcrypt.hashSync("purple-monkey-dinosaur", 10),
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk",
+    hashedPassword: bcrypt.hashSync("dishwasher-funk", 10),
   },
   aJ48lW: {
     id: "aJ48lW",
     email: "test@user.com",
     password: "easy",
+    hashedPassword: bcrypt.hashSync("easy", 10),
   },
 };
 
@@ -61,11 +56,6 @@ app.get("/", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-
-
-
-
-
 
 app.get("/urls", (req, res) => {
   const userID = req.cookies.user_id;
@@ -145,7 +135,7 @@ app.get("/urls/:id", (req, res) => {
     };
     return res.render("urls_show", templateVars);
   } else {
-    res.status(400).send(" Access denied, URL not linked to this account ")
+    res.status(400).send(" Access denied, URL not linked to this account ");
     return res.redirect("/login");
   }
 });
@@ -187,11 +177,17 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const newUserID = generateRandomString();
+  const userPassword = req.body.password;
+  const userHashedPassword =  bcrypt.hashSync(userPassword, 10);
+
   users[newUserID]  = {
     id: newUserID,
     email: req.body.email,
-    password: req.body.password,
+    password: userPassword,
+    hashedPassword: userHashedPassword,
   };
+  console.log(users);
+  console.log(users[newUserID]);
   const newUser = users[newUserID];
   if (newUser.email === "" || newUser.password === "")
     res.status(400).send('Invalid entries of email and password');
@@ -214,19 +210,24 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
+
 app.post("/login", (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
+  const user = findUserByEmail(userEmail, users);
+  const comparePasswords = bcrypt.compareSync(userPassword, user.password);
+
   if (!findUserByEmail(userEmail, users)) {
     return res.status(403).send('This email is not registered');
   }
-  if (findUserByEmail(userEmail, users) && !findMatchingPassword(userEmail, userPassword, users))
+  if (findUserByEmail(userEmail, users) && !comparePasswords) {
     return res.status(403).send('Password does not match user account with this email');
-  const user = findUserByEmail(userEmail, users);
-  if (findUserByEmail(userEmail, users) && (findMatchingPassword(userEmail,userPassword, users)))
-    res.cookie("user_id", user.id);
+  }
+  res.cookie("user_id", user.id);
   return res.redirect("/urls");
 });
+
+
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
