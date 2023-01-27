@@ -14,9 +14,9 @@ const findUserByEmail = (email, users) => {
   for (const id in users) {
     if (users[id].email === email) return users[id];
   }
+  return undefined;
 
 };
-
 
 
 const urlsForUser = (userID, urlDatabase) => {

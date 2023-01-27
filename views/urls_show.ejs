@@ -44,13 +44,14 @@
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
       </div>
-      <div class="card-footer text-muted"></div>
-      <p>Edit</p>
-      <form action="/urls/<%=id%>" method="POST">
-        <label for="longURL">New URL:</label>
-        <input type="text" name="longURL" placeholder="<%= longURL %>" />
-        <button type="submit" class="btn btn-primary">Update</button>
-      </form>
+      <div class="card-footer text-muted">
+        <p>Edit URL</p>
+        <form action="/urls/<%=id%>" method="POST">
+          <label for="longURL">New URL:</label>
+          <input type="text" name="longURL" placeholder="<%= longURL %>" />
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+      </div>
     </div>
     <!-- Bootstrap JS -->
     <script
