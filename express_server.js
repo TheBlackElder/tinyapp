@@ -242,15 +242,15 @@ app.post("/login", (req, res) => {
     return res.status(403).send('<html><h3>Please enter valid credentials<h3><html>');
   }
   const user = findUserByEmail(userEmail, users);
-  const comparePasswords = bcrypt.compareSync(userPassword, user.hashedPassword);
+  
   
   if (!user) {
     return res.status(403).send('<html><h3>This email is not registered<h3><html>');
   }
+  const comparePasswords = bcrypt.compareSync(userPassword, user.hashedPassword);
   if (!comparePasswords) {
     return res.status(403).send('<html><h3>This password does not match user account with this email<h3><html>');
   }
-
   req.session.userId = user.id;
   return res.redirect("/urls");
 });
