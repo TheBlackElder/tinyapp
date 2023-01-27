@@ -68,8 +68,8 @@ app.get("/urls", (req, res) => {
     };
     res.render("urls_index", templateVars);
   } else {
-    res.status(401).send('<html><h3>Login required<h3><html> ');
-    res.redirect("/login");
+  
+    return res.redirect("/login");
   }
 });
 
@@ -195,8 +195,13 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const newUserID = generateRandomString();
+  const userEmail = req.body.email;
   const userPassword = req.body.password;
   const userHashedPassword =  bcrypt.hashSync(userPassword, 10);
+
+  if (!userEmail && !userPassword) {
+    return res.status(403).send('<html><h3>Please enter valid credentials<h3><html>');
+  }
 
   users[newUserID]  = {
     id: newUserID,
@@ -211,7 +216,7 @@ app.post("/register", (req, res) => {
   if (findUserByEmail(newUser.email)) {
     res.status(400).send('<html><h3>User account with this email already exists<h3><html>');
   }
-  
+
   req.session.userId = newUser.id;
   res.redirect("/urls");
 });
