@@ -8,7 +8,7 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>URL - TinyApp Example</title>
+    <title>URL - TinyApp</title>
   </head>
 
   <body>
@@ -37,7 +37,9 @@
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
-        <h5 class="card-title">TinyURL for: <a href="/u/<%= longURL %>"><%= longURL%></a></h5>
+        <h5 class="card-title">
+          TinyURL for: <a href="/u/<%= longURL %>"><%= longURL%></a>
+        </h5>
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
@@ -48,7 +50,7 @@
         <label for="longURL">New URL:</label>
         <input type="text" name="longURL" placeholder="<%= longURL %>" />
         <button type="submit" class="btn btn-primary">Update</button>
-        </form>
+      </form>
     </div>
     <!-- Bootstrap JS -->
     <script

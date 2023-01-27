@@ -11,12 +11,8 @@ app.use(cookieSession({
   keys: ['this key'],
 }));
 
-
-
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
-
-
 
 const urlDatabase = {
   b6UTxQ: {
@@ -112,8 +108,6 @@ app.post("/urls/:id", (req, res) => {
   }
 });
 
-
-
 app.get("/urls/new", (req, res) => {
   const userID = req.session.userId;
   const user = users[userID];
@@ -144,7 +138,6 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
   if (longURL === undefined) {
@@ -164,8 +157,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     res.redirect("/login");
   }
 });
-
-
 
 app.get("/register", (req, res) => {
   const userID = req.session.userId;
