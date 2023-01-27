@@ -12,18 +12,11 @@ const generateRandomString = () => {
 
 const findUserByEmail = (email, users) => {
   for (const id in users) {
+    // console.log("usersId", users[id]);
     if (users[id].email === email) return users[id];
   }
   return null;
 };
-
-const findMatchingPassword = (email,password, users) => {
-  for (const id in users) {
-    if (users[id].email === email && users[id].password === password) return true;
-  }
-  return false;
-};
-
 
 
 
@@ -40,5 +33,5 @@ const urlsForUser = (userID, urlDatabase) => {
 
 
 
-module.exports = { generateRandomString, findUserByEmail, findMatchingPassword, urlsForUser};
+module.exports = { generateRandomString, findUserByEmail, urlsForUser};
 
